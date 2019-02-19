@@ -42,11 +42,11 @@ goodsBtn.forEach(function (btn, i) {
         item.appendChild(removeBtn); //добавление крестика в клонируемый продукт
 
         cartWrapper.appendChild(item); //добавление выбранного товара в корзину
-        calcTotal(); //обновление суммы в корзине
-        removeFromCart() // добавление клика на крестик
         if (empty) {
             empty.remove(); //удаление надписи ваша корзина пуста
         }
+        calcTotal(); //обновление суммы в корзине
+        removeFromCart() // добавление клика на крестик
     })
 })
 
@@ -93,19 +93,26 @@ function calcTotal() {
     let total = 0;
     prices.forEach(function (item) {
         total += +item.textContent; //суммируем цены
-        //total += parseInt(item.textContent);     //суммируем цены
     })
     totalCost.textContent = total;
+    //Добавление надписи Ваша корзина пуста
+    if (total == 0 && !document.querySelector('.empty')) {
+        let empty = document.createElement('div');
+        empty.classList.add('empty');
+        empty.innerHTML = 'Ваша корзина пока пуста'; 
+        cartWrapper.appendChild(empty); 
+    }
 }
 
 //Удаление из корзины
-function removeFromCart(){
+function removeFromCart() {
     const removeBtn = cartWrapper.querySelectorAll('.goods__item-remove');  //получили массив всех товаров в корзине
-    removeBtn.forEach(function(btn){
-        btn.addEventListener('click',() =>{
+    removeBtn.forEach(function (btn) {
+        btn.addEventListener('click', () => {
             btn.parentElement.remove();     //удаление всего родительского элемента
             calcGoods(0);
             calcTotal();
         });
     })
+
 }
