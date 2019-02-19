@@ -28,24 +28,84 @@ close.addEventListener('click', closeCart); //Клик на крестик дл�
 
 goodsBtn.forEach(function (btn, i) {
     btn.addEventListener('click', () => {
-        let item = products[i].cloneNode(true),             //клонируем товар
-            trigger = item.querySelector('button'),         //кнопка в клонируемом продукте
-            removeBtn = document.createElement('div'),      //новый блок для помещения в верстку
-            empty = cartWrapper.querySelector('.empty');    //сообщение в корзине что наша корзина пуста
-             
-            trigger.remove();       // удаляем добаваить в корзину
-            //Крестик
-            removeBtn.classList.add('goods__item-remove');
-            removeBtn.innerHTML = '&times';                 //комбинация которая добавляет крестик.
-            item.appendChild(removeBtn);                    //добавление крестика в клонируемый продукт
+        let item = products[i].cloneNode(true), //клонируем товар
+            trigger = item.querySelector('button'), //кнопка в клонируемом продукте
+            removeBtn = document.createElement('div'), //новый блок для помещения в верстку
+            empty = cartWrapper.querySelector('.empty'); //сообщение в корзине что наша корзина пуста
 
-            cartWrapper.appendChild(item);                  //добавление выбранного товара в корзину
-            if (empty) {
-                empty.remove();                             //удаление надписи ваша корзина пуста
-            }
+        trigger.remove(); // удаляем добаваить в корзину
+        showConfirm(); //вызывается анимация корзинки 
+        calcGoods(1); //подсчет колва в корзине
+        //Крестик
+        removeBtn.classList.add('goods__item-remove');
+        removeBtn.innerHTML = '&times'; //комбинация которая добавляет крестик.
+        item.appendChild(removeBtn); //добавление крестика в клонируемый продукт
+
+        cartWrapper.appendChild(item); //добавление выбранного товара в корзину
+        calcTotal(); //обновление суммы в корзине
+        removeFromCart() // добавление клика на крестик
+        if (empty) {
+            empty.remove(); //удаление надписи ваша корзина пуста
+        }
     })
 })
 
+//Обрезать заголовки товаров
+function sliceTitle() {
+    titles.forEach(function (item) {
+        if (item.textContent.length < 70) { //innerHTML-если есть теги то отображает их    textContent-просто текст.
+            return; //ничего не делаем
+        } else {
+            const str = item.textContent.slice(0, 71) + '...'; //первый 70 символов
+            item.textContent = str;
+        }
+    })
+}
+sliceTitle();
 
+//проигрывание анимации при добавлении в корзину
+function showConfirm() {
+    confirm.style.display = 'block';
+    let counter = 100;
+    const id = setInterval(frame, 10); //запуск анимации каждые 10 милисекунд
+    function frame() {
+        if (counter == 10) {
+            clearInterval(id);
+            confirm.style.display = 'none';
+        } else {
+            counter--;
+            confirm.style.transform = `translateY(-${counter}px)`; //сдвигаться вверх по оси Y.  Свойство css
+            confirm.style.opacity = '.' + counter; //корзинка осчезает
+        }
 
-//alert('code works');
+    }
+}
+
+//Обновлять счетчик товаров
+function calcGoods(i) { //1 увеличивает корзину, -1 уменьшает корзину
+    const item = cartWrapper.querySelectorAll('.goods__item'); //получени колва элементов в коризне
+    badge.textContent = item.length + i; //колво товаров помещается в корзину
+}
+
+//Подсчет суммы 
+function calcTotal() {
+    const prices = document.querySelectorAll('.cart__wrapper > .goods__item > .goods__price > span'); //получить массив цен товаров
+    let total = 0;
+    prices.forEach(function (item) {
+        total += +item.textContent; //суммируем цены
+        //total += parseInt(item.textContent);     //суммируем цены
+    })
+    totalCost.textContent = total;
+}
+
+//Удаление из корзины
+function removeFromCart(){
+    const removeBtn = cartWrapper.querySelectorAll('.goods__item-remove');  //получили массив всех товаров в корзине
+    removeBtn.forEach(function(btn){
+        btn.addEventListener('click',() =>{
+            btn.parentElement.remove();     //удаление всего родительского элемента
+            calcGoods(0);
+            calcTotal();
+        });
+    })
+}
