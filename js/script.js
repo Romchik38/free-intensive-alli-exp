@@ -18,7 +18,8 @@ window.addEventListener('DOMContentLoaded', () => {
     const loadContent = async (url, callback) => {
         await fetch(url)
             .then(response => response.json())
-            .then(json => createElement(json.goods));
+            //.then(json => createElement(json.goods));         если url = 'js/db.json'
+            .then(json => createElement(json));              // если url = 'http://localhost:3000/goods'
         callback();
     }
     //Обработка массива json
@@ -42,8 +43,8 @@ window.addEventListener('DOMContentLoaded', () => {
             goodsWrapper.appendChild(card);
         })
     }
-
-    loadContent('js/db.json', () => {
+    let url = 'http://localhost:3000/goods';
+    loadContent(url, () => {
         const cartWrapper = document.querySelector('.cart__wrapper'), //Корзина
             cart = document.querySelector('.cart'),
             close = document.querySelector('.cart__close'),
